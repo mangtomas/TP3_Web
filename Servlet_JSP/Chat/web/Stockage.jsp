@@ -19,6 +19,8 @@
     {
         MsgGest_Bean.addMessage(new Message_chat(pseudo, text));
     }
+    
+    response.setHeader("Refresh", "1" );
  %>
  <jsp:include page="Affichage.jsp"/>
  

@@ -10,24 +10,32 @@
 <%@page import="com.sun.corba.se.impl.protocol.giopmsgheaders.Message"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
+<jsp:useBean id="MsgGest_Bean" class="chat.GestionMessage" scope="application"> 
+</jsp:useBean>
 <%  
-    long last = (Long)getServletContext().getAttribute("last_mod");
-    long cur = request.getDateHeader("If-Modified-Since");
-
     if (request.getMethod() == "GET")
     {
-        if (last > cur)
+        int lastMsg = -1;
+        for( Cookie c : request.getCookies())
+        {
+            if (c.getName().compareTo("lastMsg") == 0)
+            {
+                lastMsg = Integer.parseInt(c.getValue());
+            }
+        }
+        
+        if (lastMsg < MsgGest_Bean.getNbMessage())
         {
 %>
             <jsp:include page="Affichage.jsp"/>
-<%
+<%          
+            response.addCookie(new Cookie("lastMsg", "" + MsgGest_Bean.getNbMessage()));
+            response.setHeader("Refresh", "1" );
         }
         else
         {
             response.sendError(304, "Not Modified");
         }
-        
-        response.setDateHeader("Last-Modified", System.currentTimeMillis());
     }
     else if (request.getMethod() == "POST")
     {
